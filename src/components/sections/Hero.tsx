@@ -1,13 +1,27 @@
 ﻿"use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 
 export default function Hero() {
+  const heroRef = useRef<HTMLElement>(null);
+  const reducedMotion = useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+  const artY = useTransform(scrollYProgress, [0, 1], [0, 118]);
+  const copyOpacity = useTransform(scrollYProgress, [0, 0.9], [1, 0.12]);
+  const artOpacity = useTransform(scrollYProgress, [0, 1], [1, 0.18]);
+
   return (
-    <section className="hero-section">
+    <motion.section ref={heroRef} id="top" className="hero-section">
       <div className="ice-grid" />
       <div className="ice-glow glow-one" />
       <div className="ice-glow glow-two" />
+      <span className="hero-orb hero-orb--one" aria-hidden="true" />
+      <span className="hero-orb hero-orb--two" aria-hidden="true" />
+      <span className="hero-orb hero-orb--three" aria-hidden="true" />
 
       <div className="hero-topline">
         <span><i /> THE TECHNOLOGY COMMUNITY</span>
@@ -17,9 +31,10 @@ export default function Hero() {
       <div className="hero-content">
         <motion.div
           className="hero-copy"
-          initial={{ opacity: 0, y: 30 }}
+          style={reducedMotion ? undefined : { opacity: copyOpacity }}
+          initial={reducedMotion ? false : { opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
+          transition={{ duration: reducedMotion ? 0 : 1 }}
         >
           <p className="hero-kicker">IDEAS INTO INNOVATION</p>
 
@@ -46,78 +61,96 @@ export default function Hero() {
           </div>
         </motion.div>
 
-        <div className="ice-art">
+        <motion.div
+          className="ice-art"
+          style={reducedMotion ? undefined : { y: artY, opacity: artOpacity }}
+        >
           <motion.div
             className="axios-mark-wrap"
-            initial={{ opacity: 0, scale: 0.85, y: 25 }}
+            initial={reducedMotion ? false : { opacity: 0, scale: 0.85, y: 25 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 1.3 }}
+            transition={{ duration: reducedMotion ? 0 : 1.3 }}
           >
             <svg
               className="axios-mark-svg"
-              viewBox="0 0 377 297"
+              viewBox="0 0 440 380"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
+              role="img"
               aria-label="AXIOS triangular glass symbol"
             >
               <defs>
-                <linearGradient id="leftGlass" x1="80" y1="15" x2="180" y2="220" gradientUnits="userSpaceOnUse">
+                <linearGradient id="leftGlass" x1="226" y1="22" x2="115" y2="276" gradientUnits="userSpaceOnUse">
                   <stop stopColor="#102438" />
-                  <stop offset=".35" stopColor="#526F84" />
-                  <stop offset=".55" stopColor="#A4B9C8" />
-                  <stop offset=".8" stopColor="#29475F" />
+                  <stop offset=".24" stopColor="#192F43" />
+                  <stop offset=".46" stopColor="#253E52" />
+                  <stop offset=".65" stopColor="#142B40" />
+                  <stop offset=".84" stopColor="#1E374B" />
                   <stop offset="1" stopColor="#102438" />
                 </linearGradient>
 
-                <linearGradient id="rightGlass" x1="230" y1="70" x2="330" y2="260" gradientUnits="userSpaceOnUse">
+                <linearGradient id="rightGlass" x1="267" y1="89" x2="373" y2="342" gradientUnits="userSpaceOnUse">
                   <stop stopColor="#102438" />
-                  <stop offset=".35" stopColor="#526F84" />
-                  <stop offset=".55" stopColor="#A4B9C8" />
-                  <stop offset=".8" stopColor="#29475F" />
+                  <stop offset=".24" stopColor="#192F43" />
+                  <stop offset=".46" stopColor="#253E52" />
+                  <stop offset=".65" stopColor="#142B40" />
+                  <stop offset=".84" stopColor="#1E374B" />
                   <stop offset="1" stopColor="#102438" />
                 </linearGradient>
 
-                <linearGradient id="baseGlass" x1="30" y1="235" x2="250" y2="275" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#102438" />
-                  <stop offset=".4" stopColor="#526F84" />
-                  <stop offset=".65" stopColor="#A4B9C8" />
-                  <stop offset="1" stopColor="#29475F" />
+                <linearGradient id="baseGlass" x1="185" y1="290" x2="185" y2="342" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#213C52" />
+                  <stop offset=".32" stopColor="#142B40" />
+                  <stop offset=".68" stopColor="#1E374B" />
+                  <stop offset="1" stopColor="#102438" />
                 </linearGradient>
               </defs>
 
               <g
-                stroke="#EAF4FA"
-                strokeWidth="2"
+                stroke="#7890A3"
+                strokeOpacity=".84"
+                strokeWidth="2.5"
                 strokeLinejoin="round"
+                strokeLinecap="round"
               >
-                {/* Left glass piece */}
+                {/* Three separate glass pieces, shaped to match the reference mark. */}
                 <path
-                  d="M60 218 L198 16 L224 56 L111 218 Z"
+                  d="M226 22 L257 76 L145 276 L85 276 Z"
                   fill="url(#leftGlass)"
                 />
-
-                {/* Right glass piece */}
                 <path
-                  d="M218 78 L244 45 L360 230 L303 230 Z"
+                  d="M267 89 L235 147 L343 342 L403 342 Z"
                   fill="url(#rightGlass)"
                 />
-
-                {/* Bottom glass piece */}
                 <path
-                  d="M30 240 L250 240 L225 286 L5 286 Z"
+                  d="M76 290 L302 290 L331 342 L50 342 Z"
                   fill="url(#baseGlass)"
                 />
               </g>
 
               <g
-                stroke="#FFFFFF"
-                strokeOpacity=".3"
-                strokeWidth="1.5"
                 fill="none"
+                stroke="#D5E1EA"
+                strokeOpacity=".56"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
-                <path d="M198 16 L224 56 L60 218" />
-                <path d="M218 78 L244 45 L360 230" />
-                <path d="M30 240 L250 240 L5 286" />
+                <path d="M230 30 L248 75 L100 265" />
+                <path d="M265 98 L241 146 L350 335" />
+                <path d="M80 295 H287" />
+              </g>
+
+              <g
+                fill="none"
+                stroke="#8EA3B4"
+                strokeOpacity=".46"
+                strokeWidth="1.4"
+                strokeLinecap="round"
+              >
+                <path d="M242 66 L157 221" />
+                <path d="M251 119 L342 281" />
+                <path d="M62 329 H257" />
               </g>
             </svg>
           </motion.div>
@@ -126,7 +159,7 @@ export default function Hero() {
 
           <motion.div
             className="floating-club-title"
-            animate={{ y: [0, -4, 0] }}
+            animate={reducedMotion ? undefined : { y: [0, -4, 0] }}
             transition={{
               duration: 4.5,
               repeat: Infinity,
@@ -135,13 +168,13 @@ export default function Hero() {
           >
             DEVELOPMENT CLUB
           </motion.div>
-        </div>
+        </motion.div>
       </div>
 
       <div className="hero-footer">
         <span>DESIGN | DEVELOP | INNOVATE</span>
         <span>SCROLL TO EXPLORE ↓</span>
       </div>
-    </section>
+    </motion.section>
   );
 }
